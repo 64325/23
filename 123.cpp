@@ -4,59 +4,87 @@
 #include <vector>
 #include <stdexcept>
 #include <fstream>
+#include <cctype>
 using namespace std;
 
-// База данных магазина
+// база данных магазина
 map<string, int> store;
 
-// Корзина покупок
+// корзина покупок
 map<string, int> cart;
 
-// Функция для добавления товара в корзину
-void addProduct(const string& article, int quantity) 
+
+//функция на проверку вводимых значений
+void correctInput(string str)
+{
+    if (str.find_first_not_of("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz") != string::npos) 
+    {
+        cerr << "ошибка: введен недопустимый символ в артикуле товара." << endl;
+    }
+}
+
+
+void correctQuantity(int quantity)
+{
+    if (!(quantity) || quantity <= 0) 
+    {
+        cerr << "ошибка: введено недопустимое значение для количества товара." << endl;
+    }
+}
+
+
+// функция для добавления товара в корзину
+void addproduct(const string& article, int quantity) 
 {
     if (store.find(article) == store.end()) 
     {
-        throw invalid_argument("Ошибка: товар с указанным артикулом не найден в магазине.");
+        throw invalid_argument("ошибка: товар с указанным артикулом не найден в магазине.");
     }
     if (quantity > store[article]) 
     {
-        throw invalid_argument( "Ошибка: запрошенное количество превышает доступное количество на складе.");
+        throw invalid_argument( "ошибка: запрошенное количество превышает доступное количество на складе.");
     }
     cart[article] += quantity;
     store[article] -= quantity;
-    cout << "Товар успешно добавлен в корзину." << endl;
+    cout << "товар успешно добавлен в корзину." << endl;
 }
-// Функция для удаления товара из корзины
-void removeProduct(const string& article, int quantity) 
+
+
+
+// функция для удаления товара из корзины
+void removeproduct(const string& article, int quantity) 
 {
     if (cart.find(article) == cart.end() || quantity > cart[article]) 
     {
-        throw invalid_argument("Ошибка: товар с указанным артикулом не найден в корзине или указано неверное количество.");
+        throw invalid_argument("ошибка: товар с указанным артикулом не найден в корзине или указано неверное количество.");
     }
     cart[article] -= quantity;
     store[article] += quantity;
-    cout << "Товар успешно удален из корзины." << endl;
+    cout << "товар успешно удален из корзины." << endl;
 }
 
-// Функция для сохранения состояния корзины в файл
-void saveCartToFile(const string& filename) 
+
+
+// функция для сохранения состояния корзины в файл
+void savecarttofile(const string& filename) 
 {
     ofstream file(filename);
     if (file.is_open()) 
     {
         for (const auto& item : cart) 
         {
-            file <<"Артикул товара: "<<  item.first << ", количество: " << item.second << endl;
+            file <<"артикул товара: "<<  item.first << ", количество: " << item.second << endl;
         }
         file.close();
-        cout << "Состояние корзины сохранено в файл: " << filename << endl;
+        cout << "состояние корзины сохранено в файл: " << filename << endl;
     } 
     else 
     {
-        throw runtime_error("Ошибка: невозможно открыть файл для сохранения.");
+        throw runtime_error("ошибка: невозможно открыть файл для сохранения.");
     }
 }
+
+
 
 // функция для восстановления корзины из файла
 void restorecartfromfile(const string& filename) 
@@ -94,27 +122,29 @@ void restorecartfromfile(const string& filename)
     }
 }
 
+
 int main() {
     
-    cout << "Введите количество товаров для добавления в Базу данных магазина: ";
+    cout << "введите количество товаров для добавления в базу данных магазина: ";
     int count;
     cin >> count;
-
+    correctQuantity(count);
     for (int i = 0; i < count; ++i) 
     {
         string article_name;
         int quantity_1;
 
-        cout << "Введите артикул товара " << i + 1 << ": ";
+        cout << "введите артикул товара " << i + 1 << ": ";
         cin >> article_name;
-
-        cout << "Введите количество этого товара " << i + 1 << ": ";
+        correctInput(article_name);
+        cout << "введите количество этого товара " << i + 1 << ": ";
         cin >> quantity_1;
-
-        store[article_name] = quantity_1; // Добавление товара и его количества в магазин
+        correctQuantity(quantity_1);
+        store[article_name] = quantity_1; // добавление товара и его количества в магазин
     }
 
-     // восстановление корзины из файла
+
+    // восстановление корзины из файла
     string cart_filename = "cart_data.txt";
     try 
     {
@@ -125,24 +155,31 @@ int main() {
         cerr << e.what() << endl;
     }
 
+
     string article;
     int quantity;
 
-    // Добавление товара в корзину
-    m:cout << "Введите артикул товара для добавления в корзину: ";
+    // добавление товара в корзину
+    m:cout << "введите артикул товара для добавления в корзину: ";
     cin >> article;
-    cout << "Введите количество товара для добавления: ";
+    correctInput(article);
+    cout << "введите количество товара для добавления: ";
     cin >> quantity;
+    correctQuantity(quantity);
 
+
+//использование функции для добавленияц
     try 
     {
-        addProduct(article, quantity);
+        addproduct(article, quantity);
     } 
     catch (const exception& e) 
     {
         cerr << e.what() << endl;
     }
-    cout << "Вы хотите добавить еще подукты в корзину?(+ или -)"<< endl;
+
+
+    cout << "вы хотите добавить еще подукты в корзину?(+ или -)"<< endl;
     string str;
     cin >> str;
     if (str == "+")
@@ -150,35 +187,44 @@ int main() {
         goto m;
     }
 
-    // Удаление товара из корзины
-    m1:cout << "Введите артикул товара для удаления из корзины: ";
+
+    // удаление товара из корзины
+    m1:cout << "введите артикул товара для удаления из корзины: ";
     cin >> article;
-    cout << "Введите количество товара для удаления: ";
+    cout << "введите количество товара для удаления: ";
     cin >> quantity;
+    correctQuantity(quantity);
+
 
     try 
     {
-        removeProduct(article, quantity);
+        removeproduct(article, quantity);
     } 
     catch (const exception& e) 
     {
         cerr << e.what() << endl;
     }
-    cout << "Вы хотите удалить еще подукты из корзины?(+ или -)"<< endl;
+
+
+    cout << "вы хотите удалить еще подукты из корзины?(+ или -)"<< endl;
     string str1;
     cin >> str1;
     if (str1 == "+")
     {
         goto m1;
     }
-    // Сохранение состояния корзины в файл
+
+
+    // сохранение состояния корзины в файл
     try 
     {
-        saveCartToFile(cart_filename);
+        savecarttofile(cart_filename);
     } 
     catch (const exception& e) 
     {
         cerr << e.what() << endl;
     }
+
+
     return 0;
 }
