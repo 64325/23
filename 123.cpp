@@ -21,8 +21,7 @@ string correctInput()
     while (article.find_first_not_of("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz") != string::npos) 
     {
         cin.clear();
-        string line;
-        getline(cin, line);
+        getline(cin, article);
         cout << "Ошибка: введен недопустимый символ в артикуле товара. Попробуйте снова: " << endl;
         cin >> article;
     }
@@ -159,7 +158,6 @@ int main()
     }
 
     string article;
-    int quantity;
 
     // Добавление товара в корзину
     while (true) 
@@ -169,7 +167,7 @@ int main()
         cout << "Введите количество товара для добавления: ";
         try 
         {
-            addproduct(correctInput(), correctQuantity());
+            addproduct(article, correctQuantity());
         } 
         catch (const exception& e) 
         {
@@ -188,10 +186,11 @@ int main()
     while (true) 
     {
         cout << "Введите артикул товара для удаления из корзины: ";
+        article = correctInput();
         cout << "Введите количество товара для удаления: ";
         try 
         {
-            removeproduct(correctInput(), correctQuantity());
+            removeproduct(article, correctQuantity());
         } 
         catch (const exception& e) 
         {
