@@ -101,29 +101,29 @@ void restorecartfromfile(const string& filename)
         int quantity;
         while (file >> article >> quantity) 
         {
-            if (store.find(article) == store.end()) 
+            if (cart.find(article) == cart.end()) 
             {
-                cout << "Ошибка: товар с артикулом " << article << " не найден в магазине." << endl;
+                cout << "ошибка: товар с артикулом " << article << " не найден в корзине покупок." << endl;
             } 
             else 
             {
                 if (quantity > store[article]) 
                 {
-                    cout << "Ошибка: количество товара с артикулом " << article << " в файле превышает доступное количество на складе." << endl;
+                    cout << "ошибка: количество товара с артикулом " << article << " в файле превышает доступное количество в корзине." << endl;
                 } 
                 else 
                 {
-                    cart[article] = quantity;
-                    store[article] -= quantity;
+                    store[article] += quantity;
+                    cart[article] -= quantity;
                 }
             }
         }
         file.close();
-        cout << "Корзина покупок восстановлена из файла: " << filename << endl;
+        cout << "корзина покупок восстановлена из файла: " << filename << endl;
     } 
     else 
     {
-        throw runtime_error("Ошибка: невозможно открыть файл для восстановления.");
+        throw runtime_error("ошибка: невозможно открыть файл для восстановления.");
     }
 }
 
@@ -158,6 +158,7 @@ int main()
     }
 
     string article;
+    int quantity;
 
     // Добавление товара в корзину
     while (true) 
@@ -165,9 +166,10 @@ int main()
         cout << "Введите артикул товара для добавления в корзину: ";
         article = correctInput();
         cout << "Введите количество товара для добавления: ";
+        quantity = correctQuantity();
         try 
         {
-            addproduct(article, correctQuantity());
+            addproduct(article, quantity);
         } 
         catch (const exception& e) 
         {
@@ -188,9 +190,10 @@ int main()
         cout << "Введите артикул товара для удаления из корзины: ";
         article = correctInput();
         cout << "Введите количество товара для удаления: ";
+        quantity = correctQuantity();
         try 
         {
-            removeproduct(article, correctQuantity());
+            removeproduct(article, quantity);
         } 
         catch (const exception& e) 
         {
