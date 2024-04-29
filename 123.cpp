@@ -5,17 +5,18 @@
 #include <stdexcept>
 #include <fstream>
 #include <cctype>
-using namespace std;
+
 
 // база данных магазина
-map<string, int> store;
+std::map<std::string, int> store;
 
 // корзина покупок
-map<string, int> cart;
+std::map<std::string, int> cart;
 
 // функция на проверку вводимых значений
-string correctInput()
+std::string correctInput()
 {
+    using namespace std;
     string article;
     cin >> article;
     while (article.find_first_not_of("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz") != string::npos)
@@ -31,6 +32,7 @@ string correctInput()
 // функция для получения корректного количества товара
 int correctQuantity()
 {
+    using namespace std;
     int count;
     cin >> count;
     while (cin.fail() || count <= 0)
@@ -45,8 +47,9 @@ int correctQuantity()
 }
 
 // функция для добавления товара в корзину
-void addproduct(const string& article, int quantity)
+void addproduct(const std::string& article, int quantity)
 {
+    using namespace std;
     if (store.find(article) == store.end())
     {
         throw invalid_argument("Ошибка: товар с указанным артикулом не найден в магазине.");
@@ -61,8 +64,9 @@ void addproduct(const string& article, int quantity)
 }
 
 // функция для удаления товара из корзины
-void removeproduct(const string& article, int quantity)
+void removeproduct(const std::string& article, int quantity)
 {
+    using namespace std;
     if (cart.find(article) == cart.end() || quantity > cart[article])
     {
         throw invalid_argument("Ошибка: товар с указанным артикулом не найден в корзине или указано неверное количество.");
@@ -73,8 +77,9 @@ void removeproduct(const string& article, int quantity)
 }
 
 // функция для сохранения состояния корзины в файл
-void savecarttofile(const string& filename)
+void savecarttofile(const std::string& filename)
 {
+    using namespace std;
     ofstream file(filename);
     if (file.is_open())
     {
@@ -92,20 +97,21 @@ void savecarttofile(const string& filename)
 }
 
 // функция для восстановления корзины из файла
-void restoreCartFromFile(const string& filename, map<string, int>& cart) 
+void restoreCartFromFile(const std::string& filename, std::map<std::string, int>& cart)
 {
+    using namespace std;
     ifstream file(filename);
-    if (!file.is_open()) 
+    if (!file.is_open())
     {
         cerr << "Ошибка открытия файла." << endl;
         return;
     }
 
     string line;
-    while (getline(file, line)) 
+    while (getline(file, line))
     {
         size_t pos = line.find(",");
-        if (pos == string::npos) 
+        if (pos == string::npos)
         {
             cerr << "Неверный формат файла." << endl;
             continue;
@@ -121,6 +127,7 @@ void restoreCartFromFile(const string& filename, map<string, int>& cart)
 
 int main()
 {
+    using namespace std;
     cout << "Введите количество товаров для добавления в базу данных магазина: ";
     int num_products = correctQuantity();
 
@@ -143,7 +150,7 @@ int main()
     string st;
     cout << "Вы хотите востановить прошлые данные в корзине?(Y/N): ";
     cin >> st;
-    if (st =="Y"||st =="y")
+    if (st == "Y" || st == "y")
     {
         try
         {
@@ -154,7 +161,7 @@ int main()
             cout << e.what() << endl;
         }
     }
-    
+
 
     string article;
     int quantity;
